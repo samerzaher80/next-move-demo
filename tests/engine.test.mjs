@@ -7,3 +7,8 @@ test('override records correction and local action',()=>{let s=surface(createSta
 test('reject does not create a task',()=>{let s=surface(createState());s=decide(s,{approve:false});assert.equal(s.reviewed[0].result,'Rejected; no action created')});
 test('next proposal appears after review',()=>{let s=surface(createState());const first=s.pending.item.id;s=decide(s,{approve:true});assert.notEqual(s.pending.item.id,first)});
 test('uncertain proposal creates clarification rather than guessed action',()=>{let s=surface(createState());s=decide(s,{approve:true});s=decide(s,{approve:true});s=decide(s,{approve:true});assert.equal(s.reviewed[2].result,'Local clarification request')});
+
+test('impact wins first and longest wait breaks ties', async () => {
+  const {prioritize} = await import('../engine.js');
+  assert.deepEqual(prioritize([{id:'new',impact:2,hours:1},{id:'old',impact:2,hours:20},{id:'urgent',impact:3,hours:0}]).map(x=>x.id), ['urgent','old','new']);
+});
